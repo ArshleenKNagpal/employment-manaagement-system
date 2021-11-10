@@ -1,7 +1,7 @@
 const inquirer = require("inquirer");
 const { db } = require("../config/connection");
 
-
+// Opening Question
 const options = [
   {
     type: "list",
@@ -19,9 +19,7 @@ const options = [
   },
 ];
 
-
 // Prompts - Navigation menu
-
 const index = () => {
   inquirer.prompt(options).then(async (answer) => {
     const navigate = answer.choices;
@@ -115,7 +113,6 @@ ORDER BY employees.id`;
 
 // Add Employees
 function addEmployees() {
-
   return inquirer
     .prompt([
       {
@@ -151,9 +148,30 @@ function addEmployees() {
 
 // Update Employee Roles
 function updateEmployees() {
-  console.log("updateEmployees");
-  process.exit;
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "updateEmployees",
+        message: "Which employees' role do you want to update?",
+      },
+      {
+        type: "input",
+        name: "updateEmployees1",
+        message: "Which role do you want to assign the selected employee?",
+      },
+    ])
+    .then((answer) => {
+      const sql = 
+      `update employees set id "(${answer.updateEmployees})" where role_id="(${answer.updateEmployees1})"`
+
+      db.promise().query(sql)
+    })
 }
+
+
+
+
 
 // View All Roles
 function viewRoleEmployees() {
@@ -215,12 +233,6 @@ function addDepartments() {
       db.promise().query(sql)
     })
 }
-
-
-
-
-
-
 
 module.exports = index;
 
