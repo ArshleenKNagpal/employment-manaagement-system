@@ -162,15 +162,25 @@ function updateEmployees() {
       },
     ])
     .then((answer) => {
-      const sql = 
-      `update employees set id "(${answer.updateEmployees})" where role_id="(${answer.updateEmployees1})"`
+      const sql =
+        `UPDATE employee SET role_id=? WHERE id)?`;
 
-      db.promise().query(sql)
+      // `update employees set id=${answer.updateEmployees} where role_id=${answer.updateEmployees1}`
+
+      // db.promise().query(sql)
+      //     })
+      // }
+
+
+      db.query(sql, (answer.updateEmployees1, answer.updateEmployees), (err, results) => {
+        if (err) {
+          console.log(err);
+        }
+        init();
+        return;
+      });
     })
-}
-
-
-
+};
 
 
 // View All Roles
