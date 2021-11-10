@@ -1,4 +1,5 @@
 const inquirer = require("inquirer");
+const { db } = require("../config/connection");
 
 
 const options = [
@@ -55,7 +56,7 @@ const index = () => {
       case "Add Role":
         const employeesRole = await roleEmployees();
         const showEmployeesRole = await viewRoleEmployees();
-        console.table(employeesRole[0]);
+        console.table(showEmployeesRole[0]);
         index()
         break;
 
@@ -68,7 +69,7 @@ const index = () => {
       case "Add Department":
         const departmentsAdd = await addDepartments();
         const showdepartmentsAdd = await allDepartments();
-        console.table(departmentsAdd[0]);
+        console.table(showdepartmentsAdd[0]);
         index()
         break;
 
@@ -80,34 +81,147 @@ const index = () => {
   )
 }
 
-function viewEmployees(){
-  console.log("viewEmployees");
-  process.exit;
+// View All Employees
+function viewEmployees() {
+  let query =
+
+    `SELECT 
+  distinct employees.id AS ID,
+  employees.first_name AS First_Name,
+  employees.last_name AS Last_Name,
+  roles.title AS Title,
+  departments.name AS Department,
+  roles.salary AS Salary,
+CONCAT(managers.first_name, " ", managers.last_name) AS Manager
+FROM employees
+INNER JOIN roles
+ON employees.role_id = roles.id
+INNER JOIN departments
+ON roles.department_id = departments.id
+LEFT OUTER JOIN employees AS Managers
+ON employees.manager_id = managers.id
+ORDER BY employees.id`;
+
+  // let query = `
+  //   select first_name, last_name, title, salary, name AS department_name
+  //   from employee_db.employees
+  //   join roles 
+  //   on role_id = roles.id
+  //   join departments
+  //   on dept_id = departments.id`;
+
+  return db.promise().query(query);
 }
 
-function addEmployees(){
-  console.log("addEmployees");
-  process.exit;
+// Add Employees
+function addEmployees() {
+
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "addEmployees",
+        message: "What is the first name of the employee?",
+      },
+      {
+        type: "input",
+        name: "addEmployees1",
+        message: "What is the last name of the employee?",
+      },
+      {
+        type: "input",
+        name: "addEmployees2",
+        message: "What is the role ID of the role?",
+      },
+      {
+        type: "input",
+        name: "addEmployees3",
+        message: "What is the manager ID of the role?",
+      },
+
+    ])
+    .then((answer) => {
+      const sql = `
+                     insert into employees (first_name, last_name, role_id, manager_id)
+                     values ("${answer.addEmployees}","${answer.addEmployees1}","${answer.addEmployees2}","${answer.addEmployees3}")`;
+      db.promise().query(sql)
+    })
 }
-function updateEmployees(){
+
+
+// Update Employee Roles
+function updateEmployees() {
   console.log("updateEmployees");
   process.exit;
 }
-function viewRoleEmployees(){
-  console.log("viewRoleEmployees");
-  process.exit;
-}
-function roleEmployees(){
-  console.log("roleEmployees");
-  process.exit;
-}
-function allDepartments(){
-  console.log("allDepartments");
-  process.exit;
-}
-function addDepartments(){
-  console.log("addDepartments");
-  process.exit;
+
+// View All Roles
+function viewRoleEmployees() {
+  let query = "select distinct title from employee_db.roles";
+  return db.promise().query(query);
 }
 
+// Add Role
+function roleEmployees() {
+
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "roleEmployees",
+        message: "What is the title of the role?",
+      },
+      {
+        type: "input",
+        name: "roleEmployees1",
+        message: "What is the salary of the role?",
+      },
+      {
+        type: "input",
+        name: "roleEmployees2",
+        message: "What is the deptartment ID of the role?",
+      },
+    ])
+
+    .then((answer) => {
+      const sql = `
+                       insert into roles (title, salary, department_id)
+                       values ("${answer.roleEmployees}","${answer.roleEmployees1}","${answer.roleEmployees2}")`;
+      db.promise().query(sql)
+    })
+}
+
+
+// View All Departments
+function allDepartments() {
+  let query = "select distinct name from employee_db.departments";
+  return db.promise().query(query);
+}
+
+// Add Department
+function addDepartments() {
+  return inquirer
+    .prompt([
+      {
+        type: "input",
+        name: "addDepartments",
+        message: "What is the name of the new department?",
+      },
+    ])
+    .then((answer) => {
+      const sql = `
+                  insert into departments (name)
+                  values ("${answer.addDepartments}")`;
+      db.promise().query(sql)
+    })
+}
+
+
+
+
+
+
+
 module.exports = index;
+
+
